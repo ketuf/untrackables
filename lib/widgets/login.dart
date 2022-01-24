@@ -1,0 +1,60 @@
+import 'package:flutter/material.dart';
+import 'package:resched/widgets/highway.dart';
+import 'package:resched/widgets/helpers/border.dart';
+import 'package:resched/widgets/typer.dart';
+import 'package:resched/redux/login/reducer.dart';
+import 'package:flutter_redux/flutter_redux.dart';
+import 'package:resched/redux/combiner.dart';
+class Login extends StatelessWidget {
+	final _emailController = TextEditingController();
+	final _passwordController = TextEditingController();
+	Widget build(BuildContext context) {
+		return Stack(children: <Widget>[
+			HighWay(),
+			Scaffold(
+				appBar: AppBar(title: Text('login', style: TextStyle(color: Colors.yellow)), backgroundColor: Colors.transparent),
+				backgroundColor: Colors.black54,
+				body: Padding(padding: EdgeInsets.only(left: 40, right: 40), child: Column(children: <Widget>[
+					 Typer(),
+				     SizedBox(height: 160),
+				     TextField(
+			         	cursorColor: Colors.yellow,
+			         	style: const TextStyle(color: Colors.yellow),
+			         	obscureText: false,
+			         	decoration: InputDecoration(
+				        	 labelText: 'E-mail',
+				         	labelStyle: const TextStyle(color: Colors.yellow),
+				         	border: const OutlineInputBorder(),
+				         	enabledBorder: border(),
+				         	focusedBorder: border(),    
+			        	),
+		        		controller: _emailController,
+			      	),
+			      	SizedBox(height: 40),
+			      	TextField(
+			         	cursorColor: Colors.yellow,
+			         	style: const TextStyle(color: Colors.yellow),
+		     	    	obscureText: true,
+ 				        decoration: InputDecoration(
+			        		labelText: 'Password',
+ 					        labelStyle: const TextStyle(color: Colors.yellow),
+ 				         	border: const OutlineInputBorder(),
+      			         	enabledBorder: border(),
+    			        	focusedBorder: border(),    
+   				       	),
+     	        		controller: _passwordController,
+			      	),
+			      	SizedBox(height: 40),
+			      	StoreConnector<AppState, VoidCallback>(
+			      		converter: (store) {
+			      			return () => store.dispatch(LoginFetch(_emailController.text, _passwordController.text, 'es.untrackabl'));
+			      		},
+			      		builder: (context, callback) {
+			      			return ElevatedButton(child: Text('login'), onPressed: callback, style: ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)));
+			      		}
+			      	)
+				])) 
+			)
+		]);
+	}
+}
