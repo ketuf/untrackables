@@ -25,6 +25,6 @@ Stream<dynamic> messagesChatAction(Stream<dynamic> actions, EpicStore<AppState> 
 	.asyncMap((action) => Dio().get('${store.state.url.url}/chat/${action.to}', options: Options(headers: {
 		'Authorization': 'Bearer ${store.state.login.accessToken}'
 	})).then<dynamic>(
-	(res) => MessagesSuccessChatAction(List<ChatMsg>.from(json.decode(res.data).map((x) => Msg.fromJson((x))))))
+	(res) => MessagesSuccessChatAction(List<ChatMsg>.from(json.decode(res.data).map((x) => ChatMsg.fromJson((x))))))
 	.catchError((error) => MessagesErrorChatAction()));
 } 

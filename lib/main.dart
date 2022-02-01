@@ -22,9 +22,16 @@ import 'package:resched/widgets/chatter.dart';
 import 'package:resched/widgets/chat.dart';
 import 'package:resched/redux/chat/epics.dart';
 import 'package:resched/redux/profile/epics.dart';
-void main() {
-	runApp(MyApp());
-}
+import 'package:resched/widgets/dummy.dart';
+import 'package:resched/redux/home/epics.dart';
+import 'package:resched/redux/conversations/epics.dart';
+import 'package:resched/redux/stream/epics.dart';
+import 'package:resched/redux/bottom_nav/epics.dart';
+import 'package:resched/redux/stream_msg/epics.dart';
+import 'package:redux_remote_devtools/redux_remote_devtools.dart';
+import 'package:flutter_redux_dev_tools/flutter_redux_dev_tools.dart';
+import 'package:redux_dev_tools/redux_dev_tools.dart';
+import 'package:redux_logging/redux_logging.dart';
 final eschep = combineEpics<AppState>([
 	register,
 	login,
@@ -37,10 +44,30 @@ final eschep = combineEpics<AppState>([
 	fetchMessageChatAction,
 	fetchSuccessMessageChatAction,
 	messagesChatAction,
-	fetchProfileAction
+	fetchProfileAction,
+	refreshAndNavigateProfileAction,
+	refreshAndNavigateOnePofileAction2,
+	refreshAndNavigateOneProfileAction,
+	fetchHomeAction,
+	fetchConversationsAction,
+	fetchStreamAction,
+	fetchSuccessStreamMsgAction,
+	bottomNavIndex,
+	setIncomingStreamAction,
+	setOutgoingStreamAction,
+	fetchLikesIncomingStreamMsgAction,
+	fetchLikesOutgoingStreamAction,
+	fetchLikesSuccessIncomingStreamMsgAction,
+	fetchLikesSuccessOutgoingStreamMsgAction
 ]);
 var epicMiddleware = EpicMiddleware(eschep);
-final store = Store<AppState>(combineReducers<AppState>([appReducer]), initialState: AppState.initial(), middleware: [epicMiddleware, NavigationMiddleware()]);
+final store = DevToolsStore<AppState>(combineReducers<AppState>([appReducer]), initialState: AppState.initial(), middleware: [epicMiddleware, NavigationMiddleware(), LoggingMiddleware.printer()]);
+
+void main() async {
+	runApp(MyApp());
+}
+
+
 class MyApp extends StatelessWidget {
 	Widget build(BuildContext) {
 		return StoreProvider<AppState>(
@@ -51,8 +78,8 @@ class MyApp extends StatelessWidget {
         				primarySwatch: Colors.yellow,
         				brightness: Brightness.dark,
         				tabBarTheme: TabBarTheme(
-        					labelColor: Colors.yellow,
-        				),
+									labelColor: Colors.yellow,
+								),
         				iconTheme: IconThemeData(
         					color: Colors.yellow
         				)
@@ -66,7 +93,8 @@ class MyApp extends StatelessWidget {
       					'/qr': (ctx) => Qr(),
       					'/profile_following': (ctx) => ProfileFollowing(),
       					'/chatter': (ctx) => Chatter(),
-      					'/chat': (ctx) => Chat()
+      					'/chat': (ctx) => Chat(),
+      					'/dummy': (ctx) => Dummy()
       				}
     	));
 	}
@@ -89,7 +117,7 @@ class Register extends StatelessWidget {
          labelStyle: const TextStyle(color: Colors.yellow),
          border: const OutlineInputBorder(),
          enabledBorder: border(),
-         focusedBorder: border(),    
+         focusedBorder: border(),
         ),
         controller: _emailController,
       ),
@@ -139,7 +167,8 @@ class Register extends StatelessWidget {
 		              	backgroundColor: Colors.transparent,
 	    	           	body: Padding(padding: const EdgeInsets.only(left: 40, right: 40),
 	        	            child: Card(color: Colors.black54,
-		        	           child: Column(children: foschor))), 
+		        	           child: Column(children: foschor))),
+		        	          
 	                   floatingActionButton: StoreConnector<AppState, _ViewModel>(
  						converter: (store) => _ViewModel.create(store),
     					builder: (context, viewmodel) {
@@ -157,13 +186,13 @@ class Register extends StatelessWidget {
 				   						label: const Text('register'),
 				   						icon: Icon(Icons.app_registration),
 				   						backgroundColor: Colors.yellow
-				   					)	
+				   					)
  								])
  							);
   						}
   					))
                 ]);
-				
+
   			}
   			else if (state.isFetchSuccess) {
   				return Stack(children: <Widget>[
@@ -173,9 +202,9 @@ class Register extends StatelessWidget {
 		              	backgroundColor: Colors.black54,
 	                )
   				]);
-  			} 
+  			}
 			else if (!state.isFetch) {
- 				 var foschor = foschorm(context, state);				                
+ 				 var foschor = foschorm(context, state);
                  return Stack(children: <Widget>[
                  const HighWay(),
                  Scaffold(
@@ -200,7 +229,7 @@ class Register extends StatelessWidget {
 				   						label: const Text('register'),
 				   						icon: Icon(Icons.app_registration),
 				   						backgroundColor: Colors.yellow
-				   					)	
+				   					)
  								])
  							);
   						}
@@ -213,10 +242,10 @@ class Register extends StatelessWidget {
                   Padding(padding: EdgeInsets.only(left: 40, right: 40),
                       child: Card(color: Colors.black54,
                           child: LinearProgressIndicator()))
-                ]);				
-			} 
+                ]);
+			}
 			else return HighWay();
-  		}	
+  		}
   	);
   }
 }

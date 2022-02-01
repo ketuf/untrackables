@@ -27,7 +27,7 @@ class Chat extends StatelessWidget {
 						backgroundColor: Colors.black54,
 						appBar: AppBar(title: Text(''), backgroundColor: Colors.black54),
 						body: Stack(children: <Widget>[
-						Padding(padding: EdgeInsets.only(bottom: 100), child: 
+						Padding(padding: EdgeInsets.only(bottom: 100), child:
 						ListView.builder(
 							itemCount: state.text.length,
 							itemBuilder: (context, index) {
@@ -77,7 +77,7 @@ class Chat extends StatelessWidget {
 						                      		hintText: "Message...",
 						                      		hintStyle: TextStyle( color:     Colors.yellow),
 						                      		border: InputBorder.none
-						                      	),	
+						                      	),
 						                controller: _messageController,
 						              )),
 						              IconButton(
@@ -94,7 +94,7 @@ class Chat extends StatelessWidget {
 						      ),
 						      SizedBox(width: 15),
 						      StoreConnector<AppState, VoidCallback>(
-						      	converter: (store) {	
+						      	converter: (store) {
 									return () => store.dispatch(FetchMessageChatAction(_messageController.text, args.encryptedId));
 						      	},
 						      	builder: (state, callback) {
@@ -116,8 +116,8 @@ class Chat extends StatelessWidget {
 						  ),
 						) ,
 						])
-					])) 
-				]);		
+					]))
+				]);
 			},
 			onInit: (store) => store.dispatch(MessagesChatAction(args.encryptedId)),
 			onWillChange: (ChatState? prev, ChatState? cur) {
@@ -131,7 +131,7 @@ class Chat extends StatelessWidget {
 				} else if (cur!.isFetchSuccess) {
 					_messageController.text = '';
 				}
-			}	
+			}
 		);
 	}
 }

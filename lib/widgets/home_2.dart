@@ -12,7 +12,7 @@ import 'package:resched/redux/conversations/reducer.dart';
 import 'package:resched/redux/stream/reducer.dart';
 List<List<Widget>> body(_HomeViewModel viewModel) => [
 	[
-		viewModel.isStreamIncomingFetch ? LinearProgressIndicator() : ListView.builder(
+		viewModel.isStreamFetch ? LinearProgressIndicator() : ListView.builder(
 				itemCount: viewModel.streamMsgOutgoing.length,
 				itemBuilder: (context, index) {
 					final msg = viewModel.streamMsgOutgoing[index];
@@ -41,7 +41,7 @@ List<List<Widget>> body(_HomeViewModel viewModel) => [
 																color: Colors.yellow,
 														),
 														padding: EdgeInsets.all(16),
-														child: SizedBox(width: 100, child: Tooltip(message: '${msg.date.toLocal()}', child: Text(msg.value, style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold))))
+														child: SizedBox(width: 100, child: Tooltip(message: '${msg.date.toLocal()}', child: Text(msg.value, style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold, textAlign: TextAlign.right))))
 											)
 										),
 									Align(
@@ -90,6 +90,8 @@ List<List<Widget>> body(_HomeViewModel viewModel) => [
 													child: SizedBox(width: 200, child: Tooltip(message: '${msg.date.toLocal()}', child: Text(msg.value, style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold, overflow: TextOverflow.clip))))
 										)
 										),
+
+
 						]));
 				}
 				}
@@ -99,33 +101,79 @@ List<List<Widget>> body(_HomeViewModel viewModel) => [
 						itemBuilder: (context, index) {
 							final msg = viewModel.streamMsgIncoming[index];
 							if(!msg.isUs) {
-								return Center(child: Card(
-									color: Colors.yellow,
-									child: Padding(padding: EdgeInsets.only(left: 10, right: 10), child: Column(children: <Widget>[
-										Row(
-											mainAxisAlignment: MainAxisAlignment.spaceBetween,
-											children: <Widget> [
-												Column(children: <Widget>[
-													msg.isToMutual ? IconButton(icon: Icon(Icons.add_to_home_screen, color: Colors.black, size: 20), onPressed: () => viewModel.profileFollower(Follower(encryptedId: msg.toEncryptedId!, nickname: msg.to!)), constraints: BoxConstraints(), padding: EdgeInsets.zero) : Container(),
-													Text('to: ${msg.to!}', style: TextStyle(color: Colors.black, fontSize: 10)),
-												]),
-												SizedBox(width: 150, child: Text('${msg.value!}', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold))),
-												Column(children: <Widget>[
-													msg.isFromMutual ? IconButton(icon: Icon(Icons.add_to_home_screen, color: Colors.black, size: 20), onPressed: () => viewModel.profileFollower(Follower(encryptedId: msg.fromEncryptedId!, nickname: msg.from!)), constraints: BoxConstraints(), padding: EdgeInsets.zero) : Icon(Icons.enhanced_encryption, color: Colors.black, size: 20),
-													Text('from: ${msg.from!}', style: TextStyle(color: Colors.black, fontSize: 10)),
-												]),
-											]),
-											Row(
-												mainAxisAlignment: MainAxisAlignment.end,
-												children: <Widget>[
-													IconButton(icon: Icon(Icons.chat), onPressed: null),
-													IconButton(icon: Icon(Icons.favorite), onPressed: viewModel.fetchLike(true, viewModel.streamMsgIncoming[index].msgId))
-												]
+			 				return Container(
+								padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+								child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,  children: <Widget>[
+										Align(
+												alignment: Alignment.topLeft,
+												child: Container(
+															decoration: BoxDecoration(
+																	borderRadius: BorderRadius.circular(20),
+																	color: Colors.yellow,
+															),
+															padding: const EdgeInsets.all(16),
+															child: Row(children: <Widget>[
+																	msg.isFromMutual ? IconButton(icon: Icon(Icons.add_to_home_screen, color: Colors.black, size: 20), onPressed: () => viewModel.profileFollower(Follower(encryptedId: msg.toEncryptedId!, nickname: msg.from!)), constraints: BoxConstraints(), padding: EdgeInsets.zero) : Container(),
+																	Text('from ${msg.from!}', style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)),
+															])
+												)),
+												Align(
+													alignment: Alignment.topCenter,
+													child: Container(
+																decoration: BoxDecoration(
+																		borderRadius: BorderRadius.circular(20),
+																		color: Colors.yellow,
+																),
+																padding: EdgeInsets.all(16),
+																child: Tooltip(message: '${msg.date.toLocal()}', child: Text(msg.value, style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)))
+													)
+												),
+											Align(
+												alignment: Alignment.topRight,
+												child: Container(
+															decoration: BoxDecoration(
+																	borderRadius: BorderRadius.circular(20),
+																	color: Colors.yellow,
+															),
+															padding: EdgeInsets.all(16),
+															child: Row(children: <Widget>[
+																	Text('to ${msg.to!}', style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)),
+																	msg.isToMutual ? IconButton(icon: Icon(Icons.add_to_home_screen, color: Colors.black, size: 20), onPressed: () => viewModel.profileFollower(Follower(encryptedId: msg.toEncryptedId!, nickname: msg.from!)), constraints: BoxConstraints(), padding: EdgeInsets.zero) : Container(),
+															])
+												)
 											)
 									])
-								)));
-							} else {
-								return Container();
+							);
+						} else {
+							return Container(
+								padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
+								child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween,  children: <Widget>[
+									Align(
+										alignment: Alignment.topLeft,
+										child: Container(
+													decoration: BoxDecoration(
+															borderRadius: BorderRadius.circular(20),
+															color: Colors.yellow,
+													),
+													padding: EdgeInsets.all(16),
+													child: Row(children: <Widget>[
+															IconButton(icon: Icon(Icons.add_to_home_screen, color: Colors.black, size: 20), onPressed: () => viewModel.profileFollower(Follower(encryptedId: msg.toEncryptedId!, nickname: msg.from!)), constraints: BoxConstraints(), padding: EdgeInsets.zero),
+															Text('from: ${msg.from!}', style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)),
+													])
+										)
+									),
+										Align(
+												alignment: Alignment.topRight,
+												child: Container(
+															decoration: BoxDecoration(
+																	borderRadius: BorderRadius.circular(20),
+																	color: Colors.yellow,
+															),
+															padding: const EdgeInsets.all(16),
+															child: Tooltip(message: '${msg.date.toLocal()}', child: Text(msg.value, style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)))
+												)),
+									])
+								);
 							}
 						}
 					)
@@ -183,7 +231,7 @@ List<List<Widget>> body(_HomeViewModel viewModel) => [
 																		color: Colors.yellow,
 																),
 																padding: EdgeInsets.all(16),
-																child: Tooltip(message: '${viewModel.outgoings[index].date.toLocal()}', child: Text(viewModel.outgoings[index].value, style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)))
+																child: Tooltip(message: '${viewModel.outgoings[index]!.date.toLocal()}', child: Text(viewModel.outgoings[index].value, style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold)))
 													)
 													)
 												])
@@ -259,87 +307,82 @@ class Home extends StatelessWidget {
 			StoreConnector<AppState, _HomeViewModel>(
 				converter: (store) => _HomeViewModel.create(store),
 				builder: (context, viewModel) {
-				if (!viewModel.isStreamIncomingFetch && !viewModel.isStreamOutgoingFetch) {
-					return DefaultTabController(
-					length: 2,
-					child: Scaffold(
-						appBar: AppBar(
-							iconTheme: IconThemeData(
-								color: Colors.yellow
-							),
-							title: Text('(un)trackabl.es', style: TextStyle(color: Colors.yellow)),
-							backgroundColor: Colors.black54,
-							actions: <Widget>[
-								StoreConnector<AppState, VoidCallback>(
-									converter: (store) {
-										return () => store.dispatch(NavigateToAction.push('/follow'));
-									},
-									builder: (context, callback) {
-										return IconButton(icon: Icon(Icons.add), onPressed: callback, color: Colors.yellow);
-									}
-								),
-								StoreConnector<AppState, VoidCallback>(
-									converter: (store) {
-										return () => store.dispatch(NavigateToAction.replace('/qr'));
-									},
-									builder: (context, callback) {
-										return IconButton(icon: const Icon(Icons.qr_code), onPressed: callback, color: Colors.yellow);
-									}
-								)
-							],
-							bottom: (viewModel.index == 0) ?
-								TabBar(
-									tabs: [
-										const Tab(icon: Icon(Icons.arrow_upward)),
-										const Tab(icon: Icon(Icons.arrow_downward))
-									],
-									indicatorColor: Colors.yellow
-								) : (viewModel.index == 1 ? TabBar(
-									tabs: [
-										Tab(icon: Icon(Icons.outbond)),
-										Tab(icon: Icon(Icons.other_houses))
-									],
-									indicatorColor: Colors.yellow
-								) :
-									TabBar(
-									indicatorColor: Colors.yellow,
-									tabs: [
-										Tab(icon: Icon(Icons.arrow_upward), text: '${viewModel.following.length}'),
-										Tab(icon: Icon(Icons.arrow_downward), text: '${viewModel.followers.length}')
-									]
-								))
+				return DefaultTabController(
+				length: 2,
+				child: Scaffold(
+					appBar: AppBar(
+						iconTheme: IconThemeData(
+							color: Colors.yellow
 						),
-						body: !viewModel.isStreamIncomingFetch ? TabBarView(
-							children: body(viewModel)[viewModel.index]
-						) : null,
-						backgroundColor: Colors.black54,
-						bottomNavigationBar: BottomNavigationBar(
-									backgroundColor: Colors.black,
-									selectedItemColor: Colors.yellow,
-									currentIndex: viewModel.index,
-									onTap:(i) => viewModel.navigate(i),
-									items: const <BottomNavigationBarItem>[
-										BottomNavigationBarItem(
-											icon: Icon(Icons.dynamic_feed),
-											label: 'stream'
-										),
-										BottomNavigationBarItem(
-											icon: Icon(Icons.chat),
-											label: 'chat',
-										),
-										BottomNavigationBarItem(
-											icon: Icon(Icons.flash_on),
-											label: 'followers'
-										),
+						title: Text('(un)trackabl.es', style: TextStyle(color: Colors.yellow)),
+						backgroundColor: Colors.black,
+						actions: <Widget>[
+							StoreConnector<AppState, VoidCallback>(
+								converter: (store) {
+									return () => store.dispatch(NavigateToAction.push('/follow'));
+								},
+								builder: (context, callback) {
+									return IconButton(icon: Icon(Icons.add), onPressed: callback, color: Colors.yellow);
+								}
+							),
+							StoreConnector<AppState, VoidCallback>(
+								converter: (store) {
+									return () => store.dispatch(NavigateToAction.replace('/qr'));
+								},
+								builder: (context, callback) {
+									return IconButton(icon: const Icon(Icons.qr_code), onPressed: callback, color: Colors.yellow);
+								}
+							)
+						],
+						bottom: (viewModel.index == 0) ?
+							TabBar(
+								tabs: [
+									const Tab(icon: Icon(Icons.arrow_upward)),
+									const Tab(icon: Icon(Icons.arrow_downward))
+								],
+								indicatorColor: Colors.yellow
+							) : (viewModel.index == 1 ? TabBar(
+								tabs: [
+									Tab(icon: Icon(Icons.outbond)),
+									Tab(icon: Icon(Icons.other_houses))
+								],
+								indicatorColor: Colors.yellow
+							) :
+								TabBar(
+								indicatorColor: Colors.yellow,
+								tabs: [
+									Tab(icon: Icon(Icons.arrow_upward), text: '${viewModel.following.length}'),
+									Tab(icon: Icon(Icons.arrow_downward), text: '${viewModel.followers.length}')
+								]
+							))
+					),
+					body: TabBarView(
+						children: body(viewModel)[viewModel.index]
+					),
+					backgroundColor: Colors.black54,
+					bottomNavigationBar: BottomNavigationBar(
+								backgroundColor: Colors.black,
+								selectedItemColor: Colors.yellow,
+								currentIndex: viewModel.index,
+								onTap:(i) => viewModel.navigate(i),
+								items: const <BottomNavigationBarItem>[
+									BottomNavigationBarItem(
+										icon: Icon(Icons.dynamic_feed),
+										label: 'stream'
+									),
+									BottomNavigationBarItem(
+										icon: Icon(Icons.chat),
+										label: 'chat',
+									),
+									BottomNavigationBarItem(
+										icon: Icon(Icons.flash_on),
+										label: 'followers'
+									),
 
-									]
-								)
-					)
-				);
-			} else {
-				return LinearProgressIndicator();
-			}
-
+								]
+							)
+				)
+			);
 			},
 			onInit: (store) => [store.dispatch(FetchHomeAction()), store.dispatch(FetchConversationsAction()), store.dispatch(FetchStreamAction())],
 			)
@@ -347,8 +390,7 @@ class Home extends StatelessWidget {
 	}
 }
 class _HomeViewModel {
-	final bool isStreamIncomingFetch;
-	final bool isStreamOutgoingFetch;
+	final bool isStreamFetch;
 	final List<Follower> followers;
 	final List<Follower> following;
 	final List<OurMsg> incomings;
@@ -361,10 +403,8 @@ class _HomeViewModel {
 	final List<List<OurMsg>> conversations;
 	final List<StreamMsg> streamMsgOutgoing;
 	final List<StreamMsg> streamMsgIncoming;
-	final Function(bool, int) fetchLike;
 	_HomeViewModel({
-		required this.isStreamIncomingFetch,
-		required this.isStreamOutgoingFetch,
+		required this.isStreamFetch,
 		required this.followers,
 		required this.following,
 		required this.index,
@@ -376,8 +416,7 @@ class _HomeViewModel {
 		required this.outgoings,
 		required this.conversations,
 		required this.streamMsgOutgoing,
-		required this.streamMsgIncoming,
-		required this.fetchLike
+		required this.streamMsgIncoming
 	});
 	factory _HomeViewModel.create(Store<AppState> store) {
 		List<Follower> followers = store.state.you.followers;
@@ -395,12 +434,8 @@ class _HomeViewModel {
 		_fetchStreamAction(FetchStreamAction action) {
 			store.dispatch(action);
 		}
-		_fetchLike(bool isIncoming, int msgId) {
-			store.dispatch(FetchLikeStreamAction(isIncoming, msgId));
-		}
 		return _HomeViewModel(
-			isStreamIncomingFetch: store.state.stream.isIncomingFetch,
-			isStreamOutgoingFetch: store.state.stream.isOutgoingFetch,
+			isStreamFetch: store.state.stream.isFetch,
 			followers: followers,
 			following: following,
 			index: index,
@@ -411,9 +446,8 @@ class _HomeViewModel {
 			incomings: store.state.home.incomings,
 			outgoings: store.state.home.outgoings,
 			conversations: store.state.conversations.msgs,
-			streamMsgOutgoing: store.state.incomingStreamMsgs,
-			streamMsgIncoming: store.state.outgoingStreamMsgs,
-			fetchLike: _fetchLike
+			streamMsgOutgoing: store.state.stream.outgoing,
+			streamMsgIncoming: store.state.stream.incoming
 		);
 	}
 }
